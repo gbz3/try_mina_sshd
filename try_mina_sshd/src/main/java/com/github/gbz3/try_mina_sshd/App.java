@@ -10,7 +10,12 @@ import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.config.keys.ClientIdentityLoader;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
+import org.apache.sshd.common.FactoryManager;
 import org.apache.sshd.common.config.keys.FilePasswordProvider;
+import org.apache.sshd.common.io.AbstractIoServiceFactoryFactory;
+import org.apache.sshd.common.io.IoServiceFactory;
+import org.apache.sshd.common.io.nio2.Nio2ServiceFactory;
+import org.apache.sshd.common.util.threads.ThreadUtils;
 
 /**
  * Hello world!
@@ -23,6 +28,14 @@ public class App
         System.out.println( "Hello World!" );
         
         try ( SshClient client = SshClient.setUpDefaultClient() ) {
+        	client.setIoServiceFactoryFactory( new AbstractIoServiceFactoryFactory( ThreadUtils.newFixedThreadPool( "hoge", 2 ), false ) {
+
+				@Override
+				public IoServiceFactory create( FactoryManager manager ) {
+					return new Nio2ServiceFactory( manager, getExecutorService(), isShutdownOnExit() );
+				}
+        		
+        	});
     		final KeyPair kp = ClientIdentityLoader.DEFAULT.loadClientIdentity( System.getenv( "env.key" ), FilePasswordProvider.EMPTY );
         	client.addPublicKeyIdentity( kp );
         	client.start();
