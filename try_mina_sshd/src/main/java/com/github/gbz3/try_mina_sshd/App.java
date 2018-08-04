@@ -28,7 +28,8 @@ public class App
         System.out.println( "Hello World!" );
         
         try ( SshClient client = SshClient.setUpDefaultClient() ) {
-        	client.setIoServiceFactoryFactory( new AbstractIoServiceFactoryFactory( ThreadUtils.newFixedThreadPool( "hoge", 2 ), false ) {
+        	client.setIoServiceFactoryFactory( new AbstractIoServiceFactoryFactory( ThreadUtils.newFixedThreadPool( "hoge", 3 ), false ) {
+//        	client.setIoServiceFactoryFactory( new AbstractIoServiceFactoryFactory( ThreadUtils.newCachedThreadPool( "fuga" ), false ) {
 
 				@Override
 				public IoServiceFactory create( FactoryManager manager ) {
